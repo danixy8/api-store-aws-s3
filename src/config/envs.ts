@@ -20,8 +20,8 @@ export const envs = {
 
   BUCKET_NAME: get('BUCKET_NAME').required().asString(),
   AWS_REGION: get('AWS_REGION').required().asString(),
-  ACCESS_KEY_ID: get('ACCESS_KEY_ID').required().asString(),
-  SECRET_ACCESS_KEY: get('SECRET_ACCESS_KEY').required().asString(),
+  AWS_ACCESS_KEY_ID: get('AWS_ACCESS_KEY_ID').required().asString(),
+  AWS_SECRET_ACCESS_KEY: get('AWS_SECRET_ACCESS_KEY').required().asString(),
 }
 
 

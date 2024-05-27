@@ -4,15 +4,14 @@ import { UserModel } from '../../data';
 import { CustomError, GetUserDto } from '../../domain';
 import { DeleteUserDto } from '../../domain/dtos/user/delete-user.dto';
 import { UploadModel } from '../../data/mongo';
-import { FileUploadService } from './file-upload.service';
-import { FileDownloadService } from './file-download.service';
+import { ImageService } from './image.service';
 
 
 
 export class UserService {
-  private readonly fileDownloadService: FileDownloadService;
+  private readonly fileDownloadService: ImageService;
   // DI
-  constructor(downloadService: FileDownloadService) {
+  constructor(downloadService: ImageService) {
     this.fileDownloadService = downloadService;
 }
   public async getUser( getUserDto: GetUserDto ) {

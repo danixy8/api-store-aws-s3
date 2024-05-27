@@ -3,10 +3,8 @@ import { Router } from 'express';
 import { Authroutes } from './auth/routes';
 import { CategoryRoutes } from './category/routes';
 import { ProductRoutes } from './products/routes';
-import { FileUploadRoutes } from './file-upload/routes';
-import { ImageRoutes } from './images/routes';
 import { Userroutes } from './user/routes';
-import { FileDownloadRoutes } from './file-download/routes';
+import { ImageRoutes } from './image/routes';
 
 
 
@@ -22,9 +20,8 @@ export class AppRoutes {
     router.use('/api/user', Userroutes.routes );
     router.use('/api/categories', CategoryRoutes.routes );
     router.use('/api/products', ProductRoutes.routes );
-    router.use('/api/upload', FileUploadRoutes.routes );
-    router.use('/api/images', ImageRoutes.routes );
-    router.use('/api/docs', FileDownloadRoutes.routes);
+    // router.use('/api/upload', FileUploadRoutes.routes );
+    router.use('/api/files', ImageRoutes.routes);
     
 
 

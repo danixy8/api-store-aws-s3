@@ -1,80 +1,72 @@
-import path from 'path';
-import fs from 'fs';
 
-import { UploadedFile } from 'express-fileupload';
-
-import { Uuid, AmazonS3Adapter, envs } from '../../config';
+import { AmazonS3Adapter, Uuid, envs } from '../../config';
 import { CustomError, UserEntity } from '../../domain';
 import CloudStorageInterface from '../../config/amazon-s3.adapter';
 import AWS from 'aws-sdk';
 import { UploadModel } from '../../data/mongo';
-import { EncodeFilename } from '../../config/encode-filename';
+import { UploadedFile } from 'express-fileupload';
 
 
-export class FileUploadService{
+
+export class ImageService {
 
   private adapter: CloudStorageInterface = new AmazonS3Adapter();
 
 
   constructor(
     private readonly uuid = Uuid.v4,
-  ) {}
-
-  
-  private checkFolder( folderPath: string ) {
-    if ( !fs.existsSync(folderPath) ) {
-      fs.mkdirSync(folderPath);
-    }
-  }
+  ) { }
 
 
-  async uploadSingle(
-    file: UploadedFile,
-    folder: string = 'uploads',
-    validExtensions: string[] = ['png','gif', 'jpg','jpeg']
-  ) {
+  async getToS3(user: UserEntity){
+
+    const expirationSeconds = 3600; 
 
     try {
-      
-      const fileExtension = file.mimetype.split('/').at(1) ?? '';
-      
-      if ( !validExtensions.includes(fileExtension) ) {
-        throw CustomError
-          .badRequest(`Invalid extension: ${ fileExtension }, valid ones ${ validExtensions }`);
+      const uploads = await UploadModel.find({ user: user.id });
+      const filesUrls = [];
+
+      for (const upload of uploads) {
+        const params = {
+          Bucket: envs.BUCKET_NAME,
+          Key: upload.name, 
+          Expires: expirationSeconds,
+        };
+
+        const s3 = new AWS.S3();
+        const url = s3.getSignedUrl('getObject', params);
+        filesUrls.push(url);
       }
 
-      const destination = path.resolve( __dirname, '../../../', folder );
-      this.checkFolder( destination );
-
-      const fileName = `${ this.uuid() }.${ fileExtension }`;
-
-      file.mv(`${destination}/${ fileName }`);
-
-      return { fileName };
-
-    } catch (error) {
-      
-      // console.log({error});
-      throw error;
-
+      return filesUrls;
+    }  catch (error) {
+      throw error
     }
-
-
-
+  
   }
 
-  async uploadMultiple(
-    files: UploadedFile[],
-    folder: string = 'uploads',
-    validExtensions: string[] = ['png','jpg','jpeg','gif']
-  ) {
-
-    const fileNames = await Promise.all(
-      files.map( file => this.uploadSingle(file, folder, validExtensions) )
-    );
-
-    return fileNames;
-
+  async deleteToS3(filenames: string | string[], userId: string) {
+    try {
+        if (typeof filenames === 'string') {
+            await this.adapter.deleteFile(filenames);
+            const deleteResult = await UploadModel.findOneAndDelete({ name: filenames, user: userId });
+            if (!deleteResult) {
+              throw CustomError.badRequest('upload not found');
+            }
+            return {status: 'removed', filenames};
+        } else if (Array.isArray(filenames)) {
+            await this.adapter.deleteFiles(filenames); 
+            const deleteResult = await UploadModel.deleteMany({ name: { $in: filenames }, user: userId });
+            if (!deleteResult) {
+              throw CustomError.badRequest('uploads not found');
+            }
+            return {status: 'removed',filenames};
+        } else {
+            throw new Error('El parámetro "filenames" debe ser un string o un arreglo de strings');
+        }
+    } catch (error) {
+        throw error;
+    }
   }
 
   async multipleUploadToS3(
@@ -152,7 +144,6 @@ export class FileUploadService{
       throw error;
     }
   }
-
 
 }
 

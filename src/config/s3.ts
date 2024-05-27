@@ -4,8 +4,8 @@ import { envs } from './envs';
 
 export const configureAWS = () => {
     AWS.config.update({
-        accessKeyId: envs.ACCESS_KEY_ID,
-        secretAccessKey: envs.SECRET_ACCESS_KEY,
+        accessKeyId: envs.AWS_ACCESS_KEY_ID,
+        secretAccessKey: envs.AWS_SECRET_ACCESS_KEY,
         region: envs.AWS_REGION,
         s3ForcePathStyle: true
     });
