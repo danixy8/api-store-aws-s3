@@ -112,7 +112,6 @@ export class FileUploadService{
         const saveUpload = await upload.save();
         uploadedFiles.push(saveUpload);
 
-        console.log('Transformed filename:', EncodeFilename.encodeFilenameForUrl(filenameForUpload));
       }
 
       return uploadedFiles;
@@ -147,7 +146,6 @@ export class FileUploadService{
 
       const saveUpload = await upload.save();
 
-      console.log('tranform nombre', EncodeFilename.encodeFilenameForUrl(filenameForUpload));
       return saveUpload;
     
     } catch (error) {

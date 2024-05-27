@@ -125,6 +125,7 @@ export class ProductService {
       }
   
       return {
+        status: 'removed',
         id: deletedProduct.id,
         name: deletedProduct.name,
         available: deletedProduct.available,

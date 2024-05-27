@@ -28,7 +28,6 @@ export class FileUploadController {
     const type = req.params.type;
     const file = req.body.files.at(0) as UploadedFile;
 
-    console.log('llego 1');
     this.fileUploadService.uploadToS3( file, req.body.user )
       .then( uploaded => res.json(uploaded) )
       .catch(  error => this.handleError( error, res ) )    

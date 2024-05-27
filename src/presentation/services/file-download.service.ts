@@ -1,6 +1,6 @@
 
 import { AmazonS3Adapter, envs } from '../../config';
-import { UserEntity } from '../../domain';
+import { CustomError, UserEntity } from '../../domain';
 import CloudStorageInterface from '../../config/amazon-s3.adapter';
 import AWS from 'aws-sdk';
 import { UploadModel } from '../../data/mongo';
@@ -47,12 +47,18 @@ export class FileDownloadService {
     try {
         if (typeof filenames === 'string') {
             await this.adapter.deleteFile(filenames);
-            const deleteUpload = await UploadModel.findOneAndDelete({ name: filenames, user: userId });
-            return deleteUpload;
+            const deleteResult = await UploadModel.findOneAndDelete({ name: filenames, user: userId });
+            if (!deleteResult) {
+              throw CustomError.badRequest('upload not found');
+            }
+            return {status: 'removed', filenames};
         } else if (Array.isArray(filenames)) {
             await this.adapter.deleteFiles(filenames); 
             const deleteResult = await UploadModel.deleteMany({ name: { $in: filenames }, user: userId });
-            return deleteResult;
+            if (!deleteResult) {
+              throw CustomError.badRequest('uploads not found');
+            }
+            return {status: 'removed',filenames};
         } else {
             throw new Error('El parámetro "filenames" debe ser un string o un arreglo de strings');
         }

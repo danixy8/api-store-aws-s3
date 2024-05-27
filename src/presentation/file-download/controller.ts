@@ -14,7 +14,6 @@ export class FileDownloadController {
 
 
   private handleError = ( error: unknown, res: Response ) => {
-    console.log('entro a aqui33');
     if ( error instanceof CustomError ) {
       return res.status( error.statusCode ).json( { error: error.message } );
     }
