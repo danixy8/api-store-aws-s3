@@ -18,6 +18,7 @@ export class ProductRoutes {
 
     // Definir las rutas
     router.get( '/', controller.getProducts );
+    router.get( '/find', controller.getProductByID );
     router.post( '/',[ AuthMiddleware.validateJWT ], controller.createProduct );
     router.put( '/',[ AuthMiddleware.validateJWT ], controller.updateProduct );
     router.delete( '/',[ AuthMiddleware.validateJWT ], controller.deleteProduct );

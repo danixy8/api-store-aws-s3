@@ -3,6 +3,7 @@ import { CreateProductDto, CustomError, PaginationDto } from '../../domain';
 import { ProductService } from '../services/product.service';
 import { UpdateProductDto } from '../../domain/dtos/products/update-product.dto';
 import { DeleteProductDto } from '../../domain/dtos/products/delete-product.dto';
+import { GetProductDto } from '../../domain/dtos/products/get-product.dto';
 
 
 
@@ -52,6 +53,18 @@ export class ProductController {
       .catch( error => this.handleError( error, res ) );
 
   };
+
+  getProductByID = async ( req: Request, res: Response ) => {
+
+    const [ error, getProductDto ] = GetProductDto.create( req.query );
+    if ( error ) return res.status(400).json({ error });
+    
+    this.productService.getProductById( getProductDto! )
+      .then( categories => res.json( categories ))
+      .catch( error => this.handleError( error, res ) );
+
+  };
+
 
   updateProduct = ( req: Request, res: Response ) => {
 

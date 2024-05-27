@@ -2,7 +2,7 @@ import { Validators } from '../../config';
 import { CategoryModel } from '../../data';
 import { CreateCategoryDto, CustomError, PaginationDto, UserEntity } from '../../domain';
 import { DeleteCategoryDto } from '../../domain/dtos/category/delete-category.dto';
-import { GetCategoryByIdDto } from '../../domain/dtos/category/get-category-by-id.dto';
+import { GetCategoryDto } from '../../domain/dtos/category/get-category.dto';
 import { UpdateCategoryDto } from '../../domain/dtos/category/update-category.dto';
 
 
@@ -131,12 +131,15 @@ export class CategoryService {
     }
   }
 
-  async getCategoryById(getCategoryByIdDto: GetCategoryByIdDto) {
+  async getCategoryById(getCategoryDto: GetCategoryDto) {
     try {
   
-      const category = await CategoryModel.findById(getCategoryByIdDto.id);
-
-
+      let category;
+      if (getCategoryDto.id) {
+        category = await CategoryModel.findOne({ _id: getCategoryDto.id });
+      } else if (getCategoryDto.name) {
+        category = await CategoryModel.findOne({ name: getCategoryDto.name });
+      }
       if (!category) {
         throw CustomError.badRequest('Category not found');
       }

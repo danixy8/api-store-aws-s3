@@ -1,6 +1,7 @@
 import { ProductModel } from '../../data';
 import { CreateProductDto, CustomError, PaginationDto, UserEntity } from '../../domain';
 import { DeleteProductDto } from '../../domain/dtos/products/delete-product.dto';
+import { GetProductDto } from '../../domain/dtos/products/get-product.dto';
 import { UpdateProductDto } from '../../domain/dtos/products/update-product.dto';
 
 
@@ -65,11 +66,26 @@ export class ProductService {
       throw CustomError.internalServer( 'Internal Server Error' );
     }
 
-
-
-
   }
 
+  async getProductById(getProductDto: GetProductDto) {
+    try {
+  
+      let product;
+      if (getProductDto.id) {
+        product = await ProductModel.findOne({ _id: getProductDto.id });
+      } else if (getProductDto.name) {
+        product = await ProductModel.findOne({ name: getProductDto.name });
+      }
+      if (!product) {
+        throw CustomError.badRequest('Product not found');
+      }
+  
+      return product
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
 
   async updateProduct( updateProductDto: UpdateProductDto, user: UserEntity ) {
     try {

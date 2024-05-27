@@ -59,7 +59,7 @@ export class UserService {
 
       if(user){
         return {
-          state: 'deleted',
+          status: 'removed',
           id: user.id,
           name: user.name,
           mail: user.email
