@@ -4,13 +4,16 @@ import { UserModel } from '../../data';
 import { CustomError, GetUserDto } from '../../domain';
 import { DeleteUserDto } from '../../domain/dtos/user/delete-user.dto';
 import { UploadModel } from '../../data/mongo';
+import { FileUploadService } from './file-upload.service';
 
 
 
 export class UserService {
-
+  private readonly fileUploadService: FileUploadService;
   // DI
-  constructor() { }
+  constructor(uploadService: FileUploadService) {
+    this.fileUploadService = uploadService;
+}
   public async getUser( getUserDto: GetUserDto ) {
 
     try {
@@ -44,21 +47,23 @@ export class UserService {
       session = await mongoose.startSession();
       session.startTransaction();
 
-        await UploadModel.deleteMany({ user: deleteUserDto.id });
+      const user = await UserModel.findOneAndDelete({ _id: deleteUserDto.id });
+      
+      const uploadRegistries = await UploadModel.find({ user: deleteUserDto.id });
+      const filenames = uploadRegistries.map(registry => registry.name); 
+      this.fileUploadService.deleteToS3(filenames, deleteUserDto.id);
 
-        const user = await UserModel.findOneAndDelete({ _id: deleteUserDto.id });
+      await session.commitTransaction();
+      console.log(`User with ID ${deleteUserDto.id} and its associated records have been deleted`);
 
-        await session.commitTransaction();
-        console.log(`User with ID ${deleteUserDto.id} and its associated records have been deleted`);
-
-        if(user){
-          return {
-            state: 'deleted',
-            id: user.id,
-            name: user.name,
-            mail: user.email
-          };
-        }
+      if(user){
+        return {
+          state: 'deleted',
+          id: user.id,
+          name: user.name,
+          mail: user.email
+        };
+      }
   
 
       } catch (error) {

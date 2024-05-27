@@ -30,9 +30,7 @@ export class FileUploadRoutes {
     // api/upload/single/<user|category|product>/
     // api/upload/multiple/<user|category|product>/
     router.post( '/single/:type', [ AuthMiddleware.validateJWT ], controller.uploadFile );
-    router.post( '/multiple/:type',controller.uploadMultileFiles );
-
-
+    router.post( '/multiple/:type', [ AuthMiddleware.validateJWT ], controller.uploadMultipleFiles );
 
     return router;
   }
