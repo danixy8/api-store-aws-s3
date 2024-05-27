@@ -5,14 +5,15 @@ import { CustomError, GetUserDto } from '../../domain';
 import { DeleteUserDto } from '../../domain/dtos/user/delete-user.dto';
 import { UploadModel } from '../../data/mongo';
 import { FileUploadService } from './file-upload.service';
+import { FileDownloadService } from './file-download.service';
 
 
 
 export class UserService {
-  private readonly fileUploadService: FileUploadService;
+  private readonly fileDownloadService: FileDownloadService;
   // DI
-  constructor(uploadService: FileUploadService) {
-    this.fileUploadService = uploadService;
+  constructor(downloadService: FileDownloadService) {
+    this.fileDownloadService = downloadService;
 }
   public async getUser( getUserDto: GetUserDto ) {
 
@@ -51,7 +52,7 @@ export class UserService {
       
       const uploadRegistries = await UploadModel.find({ user: deleteUserDto.id });
       const filenames = uploadRegistries.map(registry => registry.name); 
-      this.fileUploadService.deleteToS3(filenames, deleteUserDto.id);
+      this.fileDownloadService.deleteToS3(filenames, deleteUserDto.id);
 
       await session.commitTransaction();
       console.log(`User with ID ${deleteUserDto.id} and its associated records have been deleted`);

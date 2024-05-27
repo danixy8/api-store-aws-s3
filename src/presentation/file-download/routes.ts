@@ -16,7 +16,7 @@ export class FileDownloadRoutes {
     );
 
     router.get( '/', [ AuthMiddleware.validateJWT ], controller.getFile );
-
+    router.delete( '/', [ AuthMiddleware.validateJWT ], controller.deleteFile );
     return router;
   }
 

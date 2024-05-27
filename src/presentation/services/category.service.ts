@@ -120,6 +120,7 @@ export class CategoryService {
       }
   
       return {
+        status: 'removed',
         id: deletedCategory.id,
         name: deletedCategory.name,
         available: deletedCategory.available,

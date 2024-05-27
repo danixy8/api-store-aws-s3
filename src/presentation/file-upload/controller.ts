@@ -44,11 +44,11 @@ export class FileUploadController {
     const type = req.params.type;
     const files = req.body.files as UploadedFile[];
 
-    console.log('llego 1');
     this.fileUploadService.multipleUploadToS3( files, req.body.user )
       .then( uploaded => res.json(uploaded) )
       .catch(  error => this.handleError( error, res ) )    
 
   };
 
+  
 }

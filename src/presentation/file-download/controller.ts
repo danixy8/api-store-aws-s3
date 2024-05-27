@@ -31,4 +31,17 @@ export class FileDownloadController {
 
   };
 
+  deleteFile = ( req: Request, res: Response ) => {
+
+    const type = req.params.type;
+    const file = req.query.filename;
+
+    if (typeof file === 'string') {
+      this.fileDownloadService.deleteToS3(file, req.body.user.id)
+        .then(uploaded => res.json(uploaded))
+        .catch(error => this.handleError(error, res));
+    } else {
+      res.status(400).json({ error: 'Invalid file parameter' });
+    }
+  };
 }

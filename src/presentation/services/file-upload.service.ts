@@ -155,23 +155,6 @@ export class FileUploadService{
     }
   }
 
-  async deleteToS3(filenames: string | string[], userId: string) {
-    try {
-        if (typeof filenames === 'string') {
-            await this.adapter.deleteFile(filenames);
-            const deleteUpload = await UploadModel.findOneAndDelete({ name: filenames, user: userId });
-            return deleteUpload;
-        } else if (Array.isArray(filenames)) {
-            await this.adapter.deleteFiles(filenames); 
-            const deleteResult = await UploadModel.deleteMany({ name: { $in: filenames }, user: userId });
-            return deleteResult;
-        } else {
-            throw new Error('El parámetro "filenames" debe ser un string o un arreglo de strings');
-        }
-    } catch (error) {
-        throw error;
-    }
-}
 
 }
 

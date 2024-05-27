@@ -3,7 +3,7 @@ import { Router } from 'express';
 import { UserController } from './controller';
 import { UserService } from '../services/user.service';
 import { AuthMiddleware } from '../middlewares/auth.middleware';
-import { FileUploadService } from '../services/file-upload.service';
+import { FileDownloadService } from '../services/file-download.service';
 
 
 export class Userroutes {
@@ -13,7 +13,7 @@ export class Userroutes {
 
     const router = Router();
 
-    const userService = new UserService(new FileUploadService);
+    const userService = new UserService(new FileDownloadService);
     const controller = new UserController(userService);
     
     // Definir las rutas
