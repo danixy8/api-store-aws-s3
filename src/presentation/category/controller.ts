@@ -3,7 +3,7 @@ import { CreateCategoryDto, CustomError, PaginationDto } from '../../domain';
 import { CategoryService } from '../services/category.service';
 import { UpdateCategoryDto } from '../../domain/dtos/category/update-category.dto';
 import { DeleteCategoryDto } from '../../domain/dtos/category/delete-category.dto';
-
+import { GetCategoryByIdDto } from '../../domain/dtos/category/get-category-by-id.dto';
 
 
 
@@ -45,6 +45,17 @@ export class CategoryController {
     if ( error ) return res.status(400).json({ error });
     
     this.categoryService.getCategories( paginationDto! )
+      .then( categories => res.json( categories ))
+      .catch( error => this.handleError( error, res ) );
+
+  };
+
+  getCategoriesByID = async ( req: Request, res: Response ) => {
+
+    const [ error, getCategoryByIdDto ] = GetCategoryByIdDto.create( req.query );
+    if ( error ) return res.status(400).json({ error });
+    
+    this.categoryService.getCategoryById( getCategoryByIdDto! )
       .then( categories => res.json( categories ))
       .catch( error => this.handleError( error, res ) );
 

@@ -2,6 +2,7 @@ import { Validators } from '../../config';
 import { CategoryModel } from '../../data';
 import { CreateCategoryDto, CustomError, PaginationDto, UserEntity } from '../../domain';
 import { DeleteCategoryDto } from '../../domain/dtos/category/delete-category.dto';
+import { GetCategoryByIdDto } from '../../domain/dtos/category/get-category-by-id.dto';
 import { UpdateCategoryDto } from '../../domain/dtos/category/update-category.dto';
 
 
@@ -125,6 +126,22 @@ export class CategoryService {
         name: deletedCategory.name,
         available: deletedCategory.available,
       };
+    } catch (error) {
+      throw CustomError.internalServer(`${error}`);
+    }
+  }
+
+  async getCategoryById(getCategoryByIdDto: GetCategoryByIdDto) {
+    try {
+  
+      const category = await CategoryModel.findById(getCategoryByIdDto.id);
+
+
+      if (!category) {
+        throw CustomError.badRequest('Category not found');
+      }
+  
+      return category
     } catch (error) {
       throw CustomError.internalServer(`${error}`);
     }
