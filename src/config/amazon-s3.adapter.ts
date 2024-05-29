@@ -61,10 +61,16 @@ export class AmazonS3Adapter implements CloudStorageInterface {
         };
 
         try {
-            await this.s3.deleteObjects(params).promise();
+            const response = await this.s3.deleteObjects(params).promise();
+    
+            if (response.Errors && response.Errors.length > 0) {
+                const failedDeletes = response.Errors.map(error => error.Key).join(', ');
+                console.error(`Failed to delete the following files: ${failedDeletes}`);
+                throw new Error(`Error deleting files from S3: ${failedDeletes}`);
+            }
         } catch (error) {
-            console.log(error);
-            throw new Error('Error al borrar los archivos a S3');
+            console.error('Error while deleting files from S3:', error);
+            throw new Error('Error deleting files from S3');
         }
     }
 

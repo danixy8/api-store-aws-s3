@@ -50,8 +50,10 @@ export class UserService {
       const user = await UserModel.findOneAndDelete({ _id: deleteUserDto.id });
       
       const uploadRegistries = await UploadModel.find({ user: deleteUserDto.id });
-      const filenames = uploadRegistries.map(registry => registry.name); 
-      this.fileDownloadService.deleteToS3(filenames, deleteUserDto.id);
+      const filenames = uploadRegistries.map(registry => registry.name);
+      if(filenames.length > 0) {
+        this.fileDownloadService.deleteToS3(filenames, deleteUserDto.id);
+      }
 
       await session.commitTransaction();
       console.log(`User with ID ${deleteUserDto.id} and its associated records have been deleted`);
